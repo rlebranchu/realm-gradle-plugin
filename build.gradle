@@ -1,0 +1,87 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven { url "https://artifactory.appodeal.com/appodeal-public/" }
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+
+def props = new Properties()
+props.load(new FileInputStream("${rootDir}/realm.properties"))
+props.each { key, val ->
+    project.ext.set(key, val)
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
+repositories {
+    mavenLocal()
+    jcenter()
+    maven { url 'https://jitpack.io' }
+    maven { url "https://artifactory.appodeal.com/appodeal-public/" }
+}
+
+configurations {
+    provided
+    compile.extendsFrom provided
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation "com.github.rlebranchu:realm-transformer:3.7.2"
+    implementation 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    provided 'com.android.tools.build:gradle:2.1.0'
+
+    testImplementation gradleTestKit()
+    testImplementation 'junit:junit:4.12'
+}
+
+//for Ant filter
+import org.apache.tools.ant.filters.ReplaceTokens
+
+task generateVersionClass(type: Copy) {
+    from 'src/main/templates/Version.java'
+    into 'build/generated-src/main/java/io/realm'
+    filter(ReplaceTokens, tokens: [version: version])
+    outputs.upToDateWhen { false }
+}
+
+// Include the generated Version file
+sourceSets {
+    main {
+        java {
+            srcDir 'build/generated-src/main/java'
+        }
+    }
+}
+
+compileJava.dependsOn generateVersionClass
+
+wrapper {
+    gradleVersion = project.gradleVersion
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.findByName('release')
+                groupId = 'com.github.rlebranchu'
+                artifactId = 'realm-gradle-plugin'
+                version = '3.7.2'
+            }
+        }
+    }
+}
