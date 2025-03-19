@@ -16,12 +16,13 @@ props.each { key, val ->
     project.ext.set(key, val)
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_6
-targetCompatibility = JavaVersion.VERSION_1_6
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 repositories {
+    google()
     mavenLocal()
-    jcenter()
+    mavenCentral()
     maven { url 'https://jitpack.io' }
     maven { url "https://artifactory.appodeal.com/appodeal-public/" }
 }
@@ -40,7 +41,7 @@ sourceSets {
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation "com.github.rlebranchu:realm-transformer:3.7.2"
+    implementation files('libs/realm-transformer-3.7.2-sources.jar')
     implementation 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     provided 'com.android.tools.build:gradle:2.1.0'
 
