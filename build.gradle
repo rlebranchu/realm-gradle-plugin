@@ -41,7 +41,7 @@ sourceSets {
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation files('libs/realm-transformer-3.7.2-sources.jar')
+    implementation files('libs/realm-transformer-3.7.2.jar')
     implementation 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     provided 'com.android.tools.build:gradle:2.1.0'
 
